@@ -30,6 +30,9 @@ class Calc extends Component {
         .replace(DECIMAL_SEPARATOR, DEFAULT_DECIMAL_SEPARATOR)
         .replace(/[^0-9.]/g, '')
     );
+    // TODO: две запятых - NaN
+    // TODO: add validation
+    // TODO: убрать изменения при onChange, если они приводят к ошибке
 
     this.setState({
       [name]: newValue
