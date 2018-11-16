@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import {Renderer, Camera, Scene} from '../node_modules/react-threejs/src/';
 import TextField from '@material-ui/core/TextField';
-import Cube from './Cube'
+import React3 from 'react-three-renderer';
+import * as THREE from 'three';
 
 const LOCALE = 'ru-RU',
   DEFAULT_DECIMAL_SEPARATOR = '.',
@@ -15,7 +15,11 @@ class Calc extends Component {
       fieldEdit: null,
       totalPrice: 2000000,
       downPayment: 200000,
+
+      cameraAngle: 0,
     };
+
+    this.lightTarget = new THREE.Vector3(0, 0, 0);
   }
 
   formatNumeric = name => this.state.fieldEdit !== name ? this.state[name].toLocaleString(LOCALE) : this.state[name];
@@ -52,13 +56,108 @@ class Calc extends Component {
     return numeric.toString(10) === value;
   };
 
+  _onAnimate = () => {
+
+    this.setState({
+      cameraAngle: this.state.cameraAngle + Math.PI / 360
+    });
+  };
+
   render() {
-    const loanAmount = this.state.totalPrice - this.state.downPayment,
-      rendererSize = [200, 200],
-      rotation = 0;
+    const loanAmount = this.state.totalPrice - this.state.downPayment;
+
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    const totalPriceHeight = 7;
+    const downPaymentHeight = Math.round(100 * totalPriceHeight * this.state.downPayment / this.state.totalPrice) / 100;
+    const loanAmountHeight = Math.round(100 * totalPriceHeight * loanAmount / this.state.totalPrice) / 100;
+    const cameraPosition = new THREE.Vector3(
+      9 * Math.sin(this.state.cameraAngle),
+      3,
+      9 * Math.sin(Math.PI / 2 - this.state.cameraAngle)
+      ),
+      cameraRotation = new THREE.Euler(
+        0,
+        this.state.cameraAngle,
+        0
+      ),
+      lightPosition = new THREE.Vector3(
+        9 * Math.sin(this.state.cameraAngle),
+        3,
+        9 * Math.sin(Math.PI / 2 - this.state.cameraAngle)
+      );
 
     return (
       <div>
+        <React3
+          mainCamera="camera" // this points to the perspectiveCamera which has the name set to "camera" below
+          width={width}
+          height={height}
+          clearColor={new THREE.Color(0xdddddd)}
+          onAnimate={this._onAnimate}
+        >
+          <scene>
+            <perspectiveCamera
+              name="camera"
+              fov={75}
+              aspect={width / height}
+              near={0.1}
+              far={1000}
+              position={cameraPosition}
+              rotation={cameraRotation}
+            />
+            <ambientLight
+              color={0x505050}
+            />
+            <spotLight
+              color={0xffffff}
+              intensity={1.5}
+              position={lightPosition}
+              lookAt={this.lightTarget}
+
+              castShadow
+              shadowCameraNear={200}
+              shadowCameraFar={10000}
+              shadowCameraFov={50}
+
+              shadowBias={-0.00022}
+
+              shadowMapWidth={2048}
+              shadowMapHeight={2048}
+            />
+            <mesh
+              castShadow
+              receiveShadow
+
+              position={new THREE.Vector3(0, loanAmountHeight / 2 + downPaymentHeight, 0)}
+            >
+              <boxGeometry
+                width={1}
+                height={loanAmountHeight}
+                depth={1}
+              />
+              <meshStandardMaterial
+                color={0x448844}
+              />
+            </mesh>
+            <mesh
+              castShadow
+              receiveShadow
+
+              position={new THREE.Vector3(0 , downPaymentHeight / 2, 0)}
+            >
+              <boxGeometry
+                width={1}
+                height={downPaymentHeight}
+                depth={1}
+              />
+              <meshStandardMaterial
+                color={0x444488}
+              />
+            </mesh>
+          </scene>
+        </React3>
         <h1>Ипотечный калькулятор</h1>
         <TextField
           type="text"
@@ -82,15 +181,6 @@ class Calc extends Component {
           value={loanAmount}
           helperText="Размер кредита"
         />
-        <Renderer size={rendererSize}>
-          <Camera position={{z: 5}}/>
-          <Scene>
-            <Cube color={0x00ff00} rotation={rotation}>
-              <Cube color={0xff0000} position={{y: 2}}/>
-              <Cube color={0x0000ff} position={{z: 3}}/>
-            </Cube>
-          </Scene>
-        </Renderer>
       </div>
     );
   }

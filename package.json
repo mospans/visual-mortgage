@@ -4,11 +4,11 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^3.4.0",
-    "react": "^16.6.0",
-    "react-dom": "^16.6.0",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
     "react-scripts": "2.1.0",
-    "react-threejs": "0.0.3",
-    "three-js": "^79.0.0",
+    "react-three-renderer": "^3.2.4",
+    "three": "^0.86.0",
     "typeface-roboto": "0.0.54"
   },
   "scripts": {
