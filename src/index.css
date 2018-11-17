@@ -19,3 +19,15 @@ canvas {
 .inputs {
   max-width: 200px;
 }
+
+.inputs input[name="loanAmount"], .inputs input[name="loanAmount"] > span > label {
+  color: #444488;
+}
+
+.inputs input[name="downPayment"] {
+  color: #448844;
+}
+
+.inputs input[name="overpayment"] {
+  color: #884444;
+}
