@@ -29,7 +29,9 @@ class Calc extends Component {
     this.lightTarget = new THREE.Vector3(0, 0, 0);
   }
 
-  prettifyNumber = number => (Math.round(number * 100) / 100).toLocaleString(LOCALE);
+  round2 = number => Math.round(number * 100) / 100;
+
+  prettifyNumber = number => this.round2(number).toLocaleString(LOCALE);
 
   formatNumeric = name => this.state.fieldEdit !== name
     ? this.prettifyNumber(this.state[name])
@@ -97,6 +99,7 @@ class Calc extends Component {
   };
 
   _onAnimate = () => {
+    // TODO: add smooth animation of diagram
     this.setState({
       cameraAngle: this.state.cameraAngle + Math.PI / 360
     });
@@ -111,10 +114,11 @@ class Calc extends Component {
     const width = window.innerWidth;
     const height = window.innerHeight;
 
-    const totalPriceHeight = 7;
-    const downPaymentHeight = Math.round(100 * totalPriceHeight * this.state.downPayment / this.state.totalPrice) / 100;
-    const loanAmountHeight = Math.round(100 * totalPriceHeight * loanAmount / this.state.totalPrice) / 100;
-    const overpaymentHeight = Math.round(100 * totalPriceHeight * overpayment / this.state.totalPrice) / 100;
+    const maxHeight = 7,
+      maxValue = overpayment > this.state.totalPrice ? overpayment : this.state.totalPrice,
+      downPaymentHeight = this.round2(maxHeight * this.state.downPayment / maxValue),
+      loanAmountHeight = this.round2(maxHeight * loanAmount / maxValue),
+      overpaymentHeight = this.round2(maxHeight * overpayment / maxValue);
     const cameraPosition = new THREE.Vector3(
       9 * Math.sin(this.state.cameraAngle),
       3,
