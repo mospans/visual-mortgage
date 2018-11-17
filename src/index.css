@@ -6,10 +6,16 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #dddddd;
 }
 
 canvas {
   position: absolute;
   left: 0;
   top: 0;
+  z-index: -1;
+}
+
+.inputs {
+  max-width: 200px;
 }
